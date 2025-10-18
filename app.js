@@ -31,10 +31,16 @@ connectDB()
 });
 
 async function connectDB() {
-    await mongoose.connect(dbUrl,{
-    serverSelectionTimeoutMS: 10000,
-    tls: true,
-  });
+    try {
+        await mongoose.connect(dbUrl, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log("MongoDB connected successfully");
+    } catch (err) {
+        console.error("MongoDB connection error:", err);
+        process.exit(1); // exit server if DB fails
+    }
 }
 
 app.set("view engine", "ejs");
@@ -52,8 +58,8 @@ const store = MongoStore.create({
     touchAfter: 24 * 3600,
 });
 
-store.on("error", () => {
-    console.log("ERROR in MONGO SESSION STORE",err);
+store.on("error", (err) => {
+    console.log("ERROR in MONGO SESSION STORE", err);
 });
 
 const sessionOptions = {
@@ -113,6 +119,7 @@ app.use((err,req,res,next) => {
     //res.status(statusCode).send(message);
 });
 
-app.listen(8080,() => {
-    console.log("server is listening to port 8080");
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
