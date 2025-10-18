@@ -31,8 +31,11 @@ connectDB()
 });
 
 async function connectDB() {
-    await mongoose.connect(dbUrl);
-};
+    await mongoose.connect(dbUrl,{
+    serverSelectionTimeoutMS: 10000,
+    tls: true,
+  });
+}
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
